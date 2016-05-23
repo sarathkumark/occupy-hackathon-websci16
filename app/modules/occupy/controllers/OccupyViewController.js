@@ -7,20 +7,29 @@
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
     this.tiles = {
-      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'      
+      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    };
+    this.center = {
+      lat: 51.505,
+      lng: -0.09,
+      zoom: 8,
+      autoDiscover: true
+    };
+    this.markers = {
+      current: {
+        lat: this.center.lat,
+        lng: this.center.lng,
+        focus: true,
+        message: 'Your current position!'
+      }
     };
 
     this.initialize = function() {
 
-      $scope.setBusy('Loading ontology data...');
-
-      var init = [];
-      Promise.all(init).then((result) => {
+      global.navigator.geolocation.getCurrentPosition((result) => {
         console.log(result);
-        $scope.setReady(false);
-      }).catch((err) => {
-        $scope.setError('SearchAction', 'search', err);
-        $scope.setReady(true);
+        this.markers.current.lat = result.coords.latitude;
+        this.markers.current.lng = result.coords.longitude;
       });
     };
   }
