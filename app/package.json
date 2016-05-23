@@ -1,0 +1,49 @@
+{
+  "name": "boilerplate",
+  "productName": "Boilerplate",
+  "description": "An Electron boilerplate project",
+  "version": "1.1.1",
+  "author": "Andreas Gerlach <andi@appelgriebsch.org>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appelgriebsch/electron-boilerplate.git"
+  },
+  "keywords": [
+    "electron",
+    "boilerplate",
+    "angularjs"
+  ],
+  "config": {
+    "id": "com.appelgriebsch.electron-boilerplate",
+    "ico": "assets/boilerplate.ico",
+    "icns": "assets/boilerplate.icns",
+    "png": "assets/boilerplate.png"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/appelgriebsch/electron-boilerplate/issues"
+  },
+  "homepage": "https://github.com/appelgriebsch/electron-boilerplate#readme",
+  "dependencies": {
+    "angular": "^1.5.0",
+    "angular-animate": "^1.5.0",
+    "angular-aria": "^1.5.0",
+    "angular-centered": "^1.0.0",
+    "angular-leaflet-directive": "^0.10.0",
+    "angular-material": "^1.0.0",
+    "angular-messages": "^1.5.3",
+    "angular-mocks": "^1.5.0",
+    "angular-route": "^1.5.0",
+    "angular-sanitize": "^1.4.5",
+    "angular-ui-router": "^0.3.0",
+    "animate.css": "^3.4.0",
+    "electron-debug": "^1.0.0",
+    "leaflet": "^0.7.0",
+    "geo-from-ip": "^1.0.0",
+    "vis": "^4.16.1"
+  }
+}
