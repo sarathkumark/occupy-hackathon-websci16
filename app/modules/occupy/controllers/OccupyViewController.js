@@ -27,9 +27,10 @@
     this.initialize = function() {
 
       global.navigator.geolocation.getCurrentPosition((result) => {
-        console.log(result);
-        this.markers.current.lat = result.coords.latitude;
-        this.markers.current.lng = result.coords.longitude;
+        $q.when(true).then(() => {
+          this.markers.current.lat = result.coords.latitude;
+          this.markers.current.lng = result.coords.longitude;
+        });
       });
     };
   }
