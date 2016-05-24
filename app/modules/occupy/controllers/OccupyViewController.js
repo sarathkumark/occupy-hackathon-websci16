@@ -32,30 +32,33 @@
         width: '100%',
         height: '80px',
         stack: false,
-        showMinorLabels: false
+        showMajorLabels: true,
+        showMinorLabels: false,
+        zoomable: false,
+        moveable: false
       };
-      this.dataPoints.forEach((data) => {
+
+      var i = 0;
+      this.dataPoints.timeline.forEach((data) => {
         if (data) {
           dataSet.add({
-            id: dataSet.length + 1,
-            start: data.dateTime,
+            id: i++,
+            start: data,
             type: 'point'
           });
         }
       });
-
       this.timeline = new vis.Timeline(container, dataSet, options);
     };
 
     var _createMarkers = () => {
 
       var markers = [];
-      this.dataPoints.forEach((data) => {
+      this.dataPoints.data.forEach((data) => {
         if (data) {
           markers.push([ data.location.latitude, data.location.longitude ]);
         }
       });
-
       this.layers.overlays['heat'] = {
         name: 'Heat Map',
         type: 'heat',
