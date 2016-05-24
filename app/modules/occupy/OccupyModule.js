@@ -28,8 +28,8 @@
                 templateUrl: `${moduleConfig.path}/views/occupy.view.html`,
                 controller: 'OccupyViewController as ctl'
               },
-              'actions@app': {
-                templateUrl: `${moduleConfig.path}/views/occupy.view.actions.html`
+              'status@app': {
+                templateUrl: `${moduleConfig.path}/views/occupy.view.timeline.html`
               }
             }
           });

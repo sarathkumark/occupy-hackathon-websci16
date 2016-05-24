@@ -4,10 +4,6 @@
 
   function OccupyViewController($scope, $state, $q, OccupyDataService) {
 
-    var geoIP = require('geo-from-ip');
-    var url = require('url');
-    var dns = require('dns');
-
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
     this.tiles = {
@@ -19,31 +15,49 @@
       zoom: 2,
       autoDiscover: true
     };
-    this.markers = {
+    this.markers = {};
+    this.dataPoints = [];
+    this.timeline = undefined;
+
+    var _createTimeline = () => {
+      var container = document.getElementById('timeline');
+      var dataSet = new vis.DataSet();
+      var options = {
+        width: '100%',
+        height: '80px',        
+        stack: false,
+        showMinorLabels: false
+      };
+      this.dataPoints.forEach((data) => {
+        dataSet.add({
+          id: dataSet.length + 1,
+          start: data.date,
+          type: 'point'
+        });
+      });
+
+      this.timeline = new vis.Timeline(container, dataSet, options);
+    };
+
+    var _createMarkers = () => {
 
     };
 
     this.initialize = function() {
 
+      $scope.setBusy('Analyzing data corpus...');
+
       return OccupyDataService.initialize()
-      .then(() => {
-        var lineNo = 1;
-        OccupyDataService.readLine((err, line) => {
-          var item = url.parse(line.uri);
-          dns.lookup(item.hostname, { family: 4 }, (err, ip) => {
-            console.log(item.hostname, ip);
-            var loc = geoIP.allData(ip);
-            $q.when(true).then(() => {
-              var markerID = `marker${lineNo++}`;
-              this.markers[markerID] = {
-                lat: loc.location.latitude,
-                lng: loc.location.longitude,
-                message: line.uri
-              };
-              //console.log(item.hostname, loc);
-            });
-          });
+      .then((results) => {
+        $q.when(true).then(() => {
+          this.dataPoints = results;
+          _createTimeline();
+          _createMarkers();
         });
+        $scope.setReady(false);
+      }).catch((err) => {
+        console.log(err);
+        $scope.setReady(false);
       });
     };
   }
