@@ -1,8 +1,8 @@
 {
-  "name": "boilerplate",
-  "productName": "Boilerplate",
-  "description": "An Electron boilerplate project",
-  "version": "1.1.1",
+  "name": "websci16-hackathon-occupy",
+  "productName": "WebSci16-Hackathon",
+  "description": "Visualizing the Occupy Movement",
+  "version": "0.1.0",
   "author": "Andreas Gerlach <andi@appelgriebsch.org>",
   "main": "index.js",
   "scripts": {
