@@ -24,16 +24,18 @@
       var dataSet = new vis.DataSet();
       var options = {
         width: '100%',
-        height: '80px',        
+        height: '80px',
         stack: false,
         showMinorLabels: false
       };
       this.dataPoints.forEach((data) => {
-        dataSet.add({
-          id: dataSet.length + 1,
-          start: data.date,
-          type: 'point'
-        });
+        if (data) {
+          dataSet.add({
+            id: dataSet.length + 1,
+            start: data.dateTime,
+            type: 'point'
+          });
+        }
       });
 
       this.timeline = new vis.Timeline(container, dataSet, options);

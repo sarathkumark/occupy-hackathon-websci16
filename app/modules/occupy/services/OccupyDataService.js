@@ -7,8 +7,8 @@
     var fs = require('fs');
     var readline = require('readline');
     var geoIP = require('geo-from-ip');
-    var url = require('url');
-    var dns = require('dns');
+    //var url = require('url');
+    //var dns = require('dns');
 
     var _readData = function(callback) {
 
@@ -24,28 +24,26 @@
 
         var p = new Promise((resolve, reject) => {
 
+          var result;
           line = line.substr(1, line.length - 2);
           var arr = line.split(',');
-          var dateTime = `${arr[0].substr(0, 4)}-${arr[0].substr(4,2)}-${arr[0].substr(6,2)}`;
+          if (arr.length > 4) {
+            var dateTime = `${arr[2].substr(0, 4)}-${arr[2].substr(4,2)}-${arr[2].substr(6,2)}`;
+            var result = { year: arr[0], week: arr[1], timestamp: arr[2], dateTime: new Date(dateTime), status: arr[3], uri: arr[4], ip: arr[5]  };
 
-          var result = { timestamp: arr[0], date: new Date(dateTime), uri: arr[1], status: arr[2] };
-          var website = url.parse(result.uri);
-          dns.lookup(website.hostname, { family: 4 }, (err, ip) => {
-
-            if (!err) {
-              var loc = geoIP.allData(ip);
-              result.hostname = website.hostname;
+            if (arr[5]) {
+              var loc = geoIP.allData(arr[5]);
               result.location = loc.location;
-              result.ip = ip;
             }
-            resolve(result);
-          });
+          }
+          resolve(result);
         });
         promises.push(p);
       });
 
       reader.on('close', () => {
         Promise.all(promises).then((results) => {
+          console.log(results);
           callback(null, results);
         }).catch((err) => {
           callback(err, null);
