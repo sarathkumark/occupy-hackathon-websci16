@@ -4,6 +4,8 @@
 
   function OccupyViewController($scope, $state, $q, OccupyDataService) {
 
+    const SAMPLE_SIZE = 200000;
+
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
     this.center = {
@@ -61,8 +63,9 @@
     var _createMarkers = () => {
 
       var markers = [];
-      this.dataPoints.data.forEach((data) => {
-        if (data) {
+      var sample = this.dataPoints.data.length > SAMPLE_SIZE ? this.dataPoints.data.splice(0, SAMPLE_SIZE) : this.dataPoints.data;
+      sample.forEach((data) => {
+        if (data && data.location) {
           markers.push([ data.location.latitude, data.location.longitude ]);
         }
       });
