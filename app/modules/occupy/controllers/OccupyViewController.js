@@ -27,17 +27,18 @@
 
       return OccupyDataService.initialize()
       .then(() => {
+        var lineNo = 1;
         OccupyDataService.readLine((err, line) => {
-
           var item = url.parse(line.uri);
           dns.lookup(item.hostname, { family: 4 }, (err, ip) => {
             console.log(item.hostname, ip);
             var loc = geoIP.allData(ip);
             $q.when(true).then(() => {
-              var markerID = loc.city || loc.state;
+              var markerID = `marker${lineNo++}`;
               this.markers[markerID] = {
                 lat: loc.location.latitude,
-                lng: loc.location.longitude
+                lng: loc.location.longitude,
+                message: line.uri
               };
               //console.log(item.hostname, loc);
             });
