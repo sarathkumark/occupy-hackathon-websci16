@@ -35,11 +35,11 @@
           });
       });
 
-    //var OccupyDataService = require('./services/OccupyDataService');
+    var OccupyDataService = require('./services/OccupyDataService');
     var OccupyViewController = require('./controllers/OccupyViewController');
 
-    //angular.module('electron-app').service('OccupyDataService', [OccupyDataService]);
-    angular.module('electron-app').controller('OccupyViewController', ['$scope', '$state', '$q', OccupyViewController]);
+    angular.module('electron-app').service('OccupyDataService', [OccupyDataService]);
+    angular.module('electron-app').controller('OccupyViewController', ['$scope', '$state', '$q', 'OccupyDataService', OccupyViewController]);
 
   }
 
