@@ -61,16 +61,24 @@
       console.log(err);
     } else {
 
-      var timeline = result.map((elem) => { if (elem) return elem.dateTime;} ).reduce((prev, curr) => {
-        if (curr !== prev) {
-          return curr;
+      var calWeeks = [];
+      var timeline = {};
+      result.forEach((elem) => {
+        if (elem) {
+          if (elem.status == 200) {
+            var calWeek = `${elem.year}_${elem.week}`;
+            if (timeline[calWeek]) {
+              timeline[calWeek].push(elem.location);
+            } else {
+              calWeeks.push(elem.dateTime);
+              timeline[calWeek] = [ elem.location ];
+            }
+          }
         }
-        return undefined;
       });
 
-      timeline = [].concat(timeline);
-      console.log(result.timeline);
-      fs.writeFile('data.json', JSON.stringify({ timeline: timeline, data: result}), (err) => {
+      console.log(calWeeks);
+      fs.writeFile('data.json', JSON.stringify({ timeline: calWeeks, data: timeline }), (err) => {
         if (err) {
           console.log(err);
         } else {
