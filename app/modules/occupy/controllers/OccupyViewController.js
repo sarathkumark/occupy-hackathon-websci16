@@ -6,16 +6,22 @@
 
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
-    this.tiles = {
-      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    };
     this.center = {
       lat: 51.505,
       lng: -0.09,
       zoom: 2,
       autoDiscover: true
     };
-    this.markers = {};
+    this.layers = {
+      baselayers: {
+        osm: {
+          name: 'OpenStreetMap',
+          url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          type: 'xyz'
+        }
+      },
+      overlays: { }
+    };
     this.dataPoints = [];
     this.timeline = undefined;
 
@@ -43,6 +49,19 @@
 
     var _createMarkers = () => {
 
+      var markers = [];
+      this.dataPoints.forEach((data) => {
+        if (data) {
+          markers.push([ data.location.latitude, data.location.longitude ]);
+        }
+      });
+
+      this.layers.overlays['heat'] = {
+        name: 'Heat Map',
+        type: 'heat',
+        data: markers,
+        visible: true
+      };
     };
 
     this.initialize = function() {

@@ -43,7 +43,6 @@
 
       reader.on('close', () => {
         Promise.all(promises).then((results) => {
-          console.log(results);
           callback(null, results);
         }).catch((err) => {
           callback(err, null);

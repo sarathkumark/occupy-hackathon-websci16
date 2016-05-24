@@ -43,6 +43,7 @@
     "animate.css": "^3.4.0",
     "electron-debug": "^1.0.0",
     "leaflet": "^0.7.0",
+    "leaflet.heat": "^0.2.0",
     "geo-from-ip": "^1.0.0",
     "vis": "^4.16.1"
   }
