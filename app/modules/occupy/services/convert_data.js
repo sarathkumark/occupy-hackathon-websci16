@@ -61,7 +61,7 @@
       console.log(err);
     } else {
 
-      var timeline = result.map((elem) => {return elem.dateTime;} ).reduce((prev, curr) => {
+      var timeline = result.map((elem) => { if (elem) return elem.dateTime;} ).reduce((prev, curr) => {
         if (curr !== prev) {
           return curr;
         }

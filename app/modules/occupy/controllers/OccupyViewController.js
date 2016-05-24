@@ -39,12 +39,19 @@
       };
 
       var i = 0;
+      var getWeek = function(d) {
+        var onejan = new Date(d.getFullYear(), 0, 1);
+        return Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+      };
+
       this.dataPoints.timeline.forEach((data) => {
         if (data) {
+          var dt = new Date(data);
           dataSet.add({
             id: i++,
             start: data,
-            type: 'point'
+            content: `CW ${getWeek(dt)}`/*,
+            type: 'point'*/
           });
         }
       });
