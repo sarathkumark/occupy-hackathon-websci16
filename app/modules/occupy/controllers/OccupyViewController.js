@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function OccupyViewController($scope, $state, $q, OccupyDataService) {
+  function OccupyViewController($scope, $state, $q, $mdDialog, OccupyDataService) {
 
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
@@ -50,6 +50,7 @@
           this.dataSet.add({
             id: i++,
             start: data,
+            title: `CW ${_getWeek(new Date(data))}`,
             type: 'point'
           });
         }
@@ -59,6 +60,27 @@
         var selectedDate = this.dataPoints.timeline[time.items[0]];
         $q.when(true).then(() => {
           _selectDate(selectedDate);
+        });
+      });
+      this.timeline.on('doubleClick', (node) => {
+        $q.when(true).then(() => {
+          var selectedDate = this.dataPoints.timeline[node.item];
+          var dt = new Date(selectedDate);
+          var calWeek = `${dt.getFullYear()}_${_getWeek(dt)}`;
+          $mdDialog.show({
+            clickOutsideToClose: true,
+            parent: angular.element(document.body),
+            templateUrl: __dirname + '/../views/occupy.view.tagcloud.html',
+            controller: ($scope, $mdDialog) => {
+              var dtArr = calWeek.split('_');
+              $scope.calWeek = dtArr[1];
+              $scope.calYear = dtArr[0];
+              $scope.tagcloudURL = `assets/wordclouds/${calWeek}.png`;
+              $scope.close = function() {
+                $mdDialog.cancel();
+              };
+            }
+          });
         });
       });
     };
@@ -101,9 +123,7 @@
     var _selectDate = (timelinePoint) => {
       var dt = new Date(timelinePoint);
       var tmIdx = _findTimelineID(timelinePoint);
-
       _createMarkers(dt);
-
       this.timeline.setSelection(tmIdx);
     };
 

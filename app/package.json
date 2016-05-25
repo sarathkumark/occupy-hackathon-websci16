@@ -2,7 +2,7 @@
   "name": "websci16-hackathon-occupy",
   "productName": "WebSci16-Hackathon",
   "description": "Visualizing the Occupy Movement",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Andreas Gerlach <andi@appelgriebsch.org>",
   "main": "index.js",
   "scripts": {
