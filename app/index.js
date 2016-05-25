@@ -163,7 +163,7 @@
 
   app.minimizeAppToSysTray = function() {
 
-    trayIcon = new Tray(path.join(__dirname, 'assets', 'boilerplate_tray.png'));
+    trayIcon = new Tray(path.join(__dirname, 'assets', 'occupy_tray.png'));
     trayIcon.setToolTip('App is running in background mode.');
     trayIcon.on('click', () => {
       if (mainWindow) {

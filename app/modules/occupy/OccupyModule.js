@@ -39,7 +39,7 @@
     var OccupyViewController = require('./controllers/OccupyViewController');
 
     angular.module('electron-app').service('OccupyDataService', [OccupyDataService]);
-    angular.module('electron-app').controller('OccupyViewController', ['$scope', '$state', '$q', 'OccupyDataService', OccupyViewController]);
+    angular.module('electron-app').controller('OccupyViewController', ['$scope', '$state', '$q', '$mdDialog', 'OccupyDataService', OccupyViewController]);
 
   }
 
