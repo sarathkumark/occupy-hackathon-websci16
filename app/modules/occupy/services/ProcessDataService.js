@@ -31,7 +31,8 @@
       var result;
       line = line.substr(1, line.length - 2);
       var arr = line.split(',');
-      if (arr.length > 4) {
+      if ((arr.length > 4) &&
+          (arr[3] == 200)) {
         var dateTime = _getDateOfWeek(arr[1], arr[0]);
         result = { year: arr[0], week: arr[1], timestamp: arr[2], dateTime: dateTime, status: arr[3], uri: arr[4], ip: arr[5]  };
         results.push(result);
@@ -60,14 +61,12 @@
       var timeline = {};
       result.forEach((elem) => {
         if (elem) {
-          if (elem.status == 200) {
-            var calWeek = `${elem.year}_${elem.week}`;
-            if (timeline[calWeek]) {
-              timeline[calWeek].push(elem.location);
-            } else {
-              calWeeks.push(elem.dateTime);
-              timeline[calWeek] = [ elem.location ];
-            }
+          var calWeek = `${elem.year}_${elem.week}`;
+          if (timeline[calWeek]) {
+            timeline[calWeek].push(elem.location);
+          } else {
+            calWeeks.push(elem.dateTime);
+            timeline[calWeek] = [ elem.location ];
           }
         }
       });
