@@ -1,0 +1,389 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "import de.l3s.archivespark.ArchiveSpark\n",
+    "import de.l3s.archivespark.enrich.functions._\n",
+    "import de.l3s.archivespark.nativescala.implicits._\n",
+    "import de.l3s.archivespark.implicits._\n",
+    "import java.net.URL\n",
+    "import org.joda.time.DateTime\n",
+    "import org.joda.time.format.DateTimeFormatter\n",
+    "import org.joda.time.format.DateTimeFormat"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "val collection = \"ArchiveIt-Collection-2950\"\n",
+    "val cdxPath = s\"/data/hackathon/$collection/cdx/*.cdx.gz\"\n",
+    "val warcPath = s\"/data/hackathon/$collection/warc\"\n",
+    "val rdd = ArchiveSpark.hdfs(cdxPath, warcPath)(sc)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "44184030"
+      ]
+     },
+     "execution_count": 74,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "rdd.count"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "http://184.107.185.46/newsbeast/index.php?w=500&h=300&b=http://www.newsbeast.gr/files/1/2011/06/15/sintagma_1_5.jpg"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "rdd.map(r => r.originalUrl).take(1).head"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "val sample = rdd.sample(false, 0.05, 12345).cache"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "2211434"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sample.count"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Name: Compile Error\n",
+       "Message: <console>:33: error: not found: value payload\n",
+       "              payload.map(_.get[Map[String, String]](\"recordHeader\").get).filter(_.contains(\"WARC-IP-Address\")).map(_(\"WARC-IP-Address\")).take(1).head\n",
+       "              ^\n",
+       "StackTrace: "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "payload.map(_.get[Map[String, String]](\"recordHeader\").get).filter(_.contains(\"WARC-IP-Address\")).map(_(\"WARC-IP-Address\")).take(1).head"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Name: Compile Error\n",
+       "Message: <console>:33: error: not found: value payload\n",
+       "              payload.mapValues[Map[String, String]](\"recordHeader\").flatMap(_.get(\"WARC-IP-Address\")).take(1).head\n",
+       "              ^\n",
+       "StackTrace: "
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "payload.mapValues[Map[String, String]](\"recordHeader\").flatMap(_.get(\"WARC-IP-Address\")).take(1).head"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "val payloadWithIp = sample.mapEnrich[Map[String, String], String](Payload, \"recordHeader\", \"ip\") {header => header(\"WARC-IP-Address\")}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Name: java.lang.InterruptedException\n",
+       "Message: null\n",
+       "StackTrace: java.lang.Object.wait(Native Method)\n",
+       "java.lang.Object.wait(Object.java:503)\n",
+       "org.apache.spark.scheduler.JobWaiter.awaitResult(JobWaiter.scala:73)\n",
+       "org.apache.spark.scheduler.DAGScheduler.runJob(DAGScheduler.scala:612)\n",
+       "org.apache.spark.SparkContext.runJob(SparkContext.scala:1832)\n",
+       "org.apache.spark.SparkContext.runJob(SparkContext.scala:1845)\n",
+       "org.apache.spark.SparkContext.runJob(SparkContext.scala:1858)\n",
+       "org.apache.spark.rdd.RDD$$anonfun$take$1.apply(RDD.scala:1328)\n",
+       "org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:150)\n",
+       "org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:111)\n",
+       "org.apache.spark.rdd.RDD.withScope(RDD.scala:316)\n",
+       "org.apache.spark.rdd.RDD.take(RDD.scala:1302)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.<init>(<console>:47)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.<init>(<console>:52)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.<init>(<console>:54)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.<init>(<console>:56)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.<init>(<console>:58)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC$$iwC.<init>(<console>:60)\n",
+       "$line71.$read$$iwC$$iwC$$iwC$$iwC.<init>(<console>:62)\n",
+       "$line71.$read$$iwC$$iwC$$iwC.<init>(<console>:64)\n",
+       "$line71.$read$$iwC$$iwC.<init>(<console>:66)\n",
+       "$line71.$read$$iwC.<init>(<console>:68)\n",
+       "$line71.$read.<init>(<console>:70)\n",
+       "$line71.$read$.<init>(<console>:74)\n",
+       "$line71.$read$.<clinit>(<console>)\n",
+       "$line71.$eval$.<init>(<console>:7)\n",
+       "$line71.$eval$.<clinit>(<console>)\n",
+       "$line71.$eval.$print(<console>)\n",
+       "sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n",
+       "sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n",
+       "sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n",
+       "java.lang.reflect.Method.invoke(Method.java:606)\n",
+       "org.apache.spark.repl.SparkIMain$ReadEvalPrint.call(SparkIMain.scala:1065)\n",
+       "org.apache.spark.repl.SparkIMain$Request.loadAndRun(SparkIMain.scala:1346)\n",
+       "org.apache.spark.repl.SparkIMain.loadAndRunReq$1(SparkIMain.scala:840)\n",
+       "org.apache.spark.repl.SparkIMain.interpret(SparkIMain.scala:871)\n",
+       "org.apache.spark.repl.SparkIMain.interpret(SparkIMain.scala:819)\n",
+       "org.apache.toree.kernel.interpreter.scala.ScalaInterpreter$$anonfun$interpretAddTask$1$$anonfun$apply$3.apply(ScalaInterpreter.scala:361)\n",
+       "org.apache.toree.kernel.interpreter.scala.ScalaInterpreter$$anonfun$interpretAddTask$1$$anonfun$apply$3.apply(ScalaInterpreter.scala:356)\n",
+       "org.apache.toree.global.StreamState$.withStreams(StreamState.scala:81)\n",
+       "org.apache.toree.kernel.interpreter.scala.ScalaInterpreter$$anonfun$interpretAddTask$1.apply(ScalaInterpreter.scala:355)\n",
+       "org.apache.toree.kernel.interpreter.scala.ScalaInterpreter$$anonfun$interpretAddTask$1.apply(ScalaInterpreter.scala:355)\n",
+       "org.apache.toree.utils.TaskManager$$anonfun$add$2$$anon$1.run(TaskManager.scala:140)\n",
+       "java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)\n",
+       "java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)\n",
+       "java.lang.Thread.run(Thread.java:744)"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "payloadWithIp.map(r => (r.timestamp, r.status, new URL(r.originalUrl).getHost, r.get[String](\"recordHeader.ip\").get)).take(1).head"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "val Title = HtmlText.of(Html.first(\"title\"))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "val titles = payloadWithIp.enrich(Title).filterExists(Title)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{\n",
+       "  \"record\":{\n",
+       "    \"redirectUrl\":\"http://www.youtube.com/watch?v=Zo5-XpQ5Jkk&feature=youtu.be\",\n",
+       "    \"timestamp\":\"20111220013016\",\n",
+       "    \"digest\":\"3PZDDUKHFD7HGFMBSQNSJLORGA2LITEY\",\n",
+       "    \"originalUrl\":\"http://youtu.be/Zo5-XpQ5Jkk\",\n",
+       "    \"surtUrl\":\"be,youtu)/zo5-xpq5jkk\",\n",
+       "    \"mime\":\"text/html\",\n",
+       "    \"meta\":\"-\",\n",
+       "    \"status\":302\n",
+       "  },\n",
+       "  \"recordHeader\":{\n",
+       "    \"ip\":\"74.125.224.107\"\n",
+       "  },\n",
+       "  \"payload\":{\n",
+       "    \"string\":{\n",
+       "      \"html\":{\n",
+       "        \"title\":{\n",
+       "          \"text\":\"302 Found\"\n",
+       "        }\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "titles.take(1).head.toJsonString"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "val domainstatustuples = titles.map(r => (r.timestamp, r.status, new URL(r.originalUrl).getHost, r.get[String](\"recordHeader.ip\").get,r.get[String](\"payload.string.html.title.text\").get))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "val domainstatustuples = titles.map(r => (DateTimeFormat.forPattern(\"yyyyMMddHHmmss\").parseDateTime(r.timestamp).getYear,DateTimeFormat.forPattern(\"yyyyMMddHHmmss\").parseDateTime(r.timestamp).getWeekOfWeekyear, r.timestamp, r.status, \"\\\"\" +new URL(r.originalUrl).getHost+\"\\\"\", r.get[String](\"recordHeader.ip\").get,\"\\\"\" +r.get[String](\"payload.string.html.title.text\").get+\"\\\"\"))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "domainstatustuples.saveAsTextFile(\"week-domain-ip-status-title-5psample.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "val sampleagg = domainstatustuples.map(r => ((r._1,r._2,r._4,r._5,r._6), (1,r._7.replace('\\n', ' ')))).reduceByKey((x, y) => ((x._1 + y._1) , (x._2+ \"\\t\" +y._2)))\n",
+    "val sampledomains = domainstatustuples.take(1)\n",
+    "sampledomains.head\n",
+    "sampleagg.saveAsTextFile(\"week-domain-ip-status-title-agg.csv\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "ArchiveSpark (Spark 1.6.1, Toree)",
+   "language": "",
+   "name": "toree"
+  },
+  "language_info": {
+   "name": "scala"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
