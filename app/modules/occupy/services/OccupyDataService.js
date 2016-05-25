@@ -5,9 +5,17 @@
   function OccupyDataService() {
 
     var fs = require('fs');
+    var path = require('path');
+    var zlib = require('zlib');
 
     var _readData = function(callback) {
-      fs.readFile(__dirname + '/data.json', 'utf8', callback);
+      fs.readFile(path.join(__dirname, 'data.json.gz'), (err, tgz) => {
+        if (err) {
+          callback(err, undefined);
+        } else {
+          zlib.unzip(tgz, callback);
+        }
+      });
     };
 
     return {
@@ -18,7 +26,7 @@
           _readData((err, results) => {
             if (err) {
               reject(err);
-            } else {              
+            } else {
               resolve(JSON.parse(results));
             }
           });

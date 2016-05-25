@@ -5,6 +5,8 @@
   var fs = require('fs');
   var readline = require('readline');
   var geoIP = require('geo-from-ip');
+  var zlib = require('zlib');
+  var path = require('path');
   //var url = require('url');
   //var dns = require('dns');
 
@@ -14,10 +16,10 @@
     return new Date(y, 0, d);
   };
 
-  var _readData = function(callback) {
+  var _processData = function(callback) {
 
     var reader = readline.createInterface({
-      input: fs.createReadStream(__dirname + '/urlstatus.txt'),
+      input: fs.createReadStream(path.join(__dirname, 'data.dump')),
       output: process.stdout,
       terminal: false
     });
@@ -46,7 +48,7 @@
     });
 
     reader.on('close', () => {
-      console.log("Processing", promises.length, "data items...");
+      console.log('Processing', promises.length, 'data items...');
       Promise.all(promises).then((results) => {
         callback(null, results);
       }).catch((err) => {
@@ -55,7 +57,7 @@
     });
   };
 
-  _readData((err, result) => {
+  _processData((err, result) => {
 
     if (err) {
       console.log(err);
@@ -78,11 +80,18 @@
       });
 
       console.log(calWeeks);
-      fs.writeFile('data.json', JSON.stringify({ timeline: calWeeks, data: timeline }), (err) => {
+      var buff = Buffer.from(JSON.stringify({ timeline: calWeeks, data: timeline }), 'utf8');
+      zlib.gzip(buff, (err, data) => {
         if (err) {
           console.log(err);
         } else {
-          console.log("SUCCESS!");
+          fs.writeFile('data.json.gz', data, (err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log('SUCCESS!');
+            }
+          });
         }
       });
     }
