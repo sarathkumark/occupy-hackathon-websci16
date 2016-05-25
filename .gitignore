@@ -32,3 +32,6 @@ app/node_modules
 
 # vim backup files
 .*~
+
+# unprocessed dump file
+data.dump

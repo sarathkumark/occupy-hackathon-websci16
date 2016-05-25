@@ -24,36 +24,29 @@
       terminal: false
     });
 
-    var promises = [];
+    var results = [];
 
     reader.on('line', (line) => {
 
-      var p = new Promise((resolve, reject) => {
-
-        var result;
-        line = line.substr(1, line.length - 2);
-        var arr = line.split(',');
-        if (arr.length > 4) {
-          var dateTime = _getDateOfWeek(arr[1], arr[0]);
-          result = { year: arr[0], week: arr[1], timestamp: arr[2], dateTime: dateTime, status: arr[3], uri: arr[4], ip: arr[5]  };
-
-          if (arr[5]) {
-            var loc = geoIP.allData(arr[5]);
-            result.location = loc.location;
-          }
-        }
-        resolve(result);
-      });
-      promises.push(p);
+      var result;
+      line = line.substr(1, line.length - 2);
+      var arr = line.split(',');
+      if (arr.length > 4) {
+        var dateTime = _getDateOfWeek(arr[1], arr[0]);
+        result = { year: arr[0], week: arr[1], timestamp: arr[2], dateTime: dateTime, status: arr[3], uri: arr[4], ip: arr[5]  };
+        results.push(result);
+      }
     });
 
     reader.on('close', () => {
-      console.log('Processing', promises.length, 'data items...');
-      Promise.all(promises).then((results) => {
-        callback(null, results);
-      }).catch((err) => {
-        callback(err, null);
+      console.log('Processing', results.length, 'data items...');
+      results.forEach((elem) => {
+        if (elem.ip) {
+          var loc = geoIP.allData(elem.ip);
+          elem.location = loc.location;
+        }
       });
+      callback(null, results);
     });
   };
 

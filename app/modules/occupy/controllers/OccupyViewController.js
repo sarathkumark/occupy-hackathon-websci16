@@ -4,8 +4,6 @@
 
   function OccupyViewController($scope, $state, $q, OccupyDataService) {
 
-    const SAMPLE_SIZE = 200000;
-
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
     this.center = {
@@ -49,12 +47,10 @@
 
       this.dataPoints.timeline.forEach((data) => {
         if (data) {
-          var dt = new Date(data);
           this.dataSet.add({
             id: i++,
             start: data,
-            content: `${_getWeek(dt)}`/*,
-            type: 'point'*/
+            type: 'point'
           });
         }
       });
@@ -72,7 +68,6 @@
       var dtPoint = `${dt.getFullYear()}_${_getWeek(dt)}`;
       var points = this.dataPoints.data[dtPoint];
       var markers = [];
-      console.log(dtPoint, points.length);
       points.forEach((data) => {
         if (data) {
           markers.push([ data.latitude, data.longitude ]);
@@ -83,7 +78,13 @@
         type: 'heat',
         data: markers,
         visible: true,
-        doRefresh: true
+        doRefresh: true,
+        layerOptions: {
+          showOnSelector: false
+        },
+        layerParams: {
+          showOnSelector: false
+        }
       };
     };
 
