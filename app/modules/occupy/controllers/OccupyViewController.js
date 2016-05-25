@@ -56,33 +56,6 @@
         }
       });
       this.timeline = new vis.Timeline(container, this.dataSet, options);
-      this.timeline.on('select', (time) => {
-        var selectedDate = this.dataPoints.timeline[time.items[0]];
-        $q.when(true).then(() => {
-          _selectDate(selectedDate);
-        });
-      });
-      this.timeline.on('doubleClick', (node) => {
-        $q.when(true).then(() => {
-          var selectedDate = this.dataPoints.timeline[node.item];
-          var dt = new Date(selectedDate);
-          var calWeek = `${dt.getFullYear()}_${_getWeek(dt)}`;
-          $mdDialog.show({
-            clickOutsideToClose: true,
-            parent: angular.element(document.body),
-            templateUrl: __dirname + '/../views/occupy.view.tagcloud.html',
-            controller: ($scope, $mdDialog) => {
-              var dtArr = calWeek.split('_');
-              $scope.calWeek = dtArr[1];
-              $scope.calYear = dtArr[0];
-              $scope.tagcloudURL = `assets/wordclouds/${calWeek}.png`;
-              $scope.close = function() {
-                $mdDialog.cancel();
-              };
-            }
-          });
-        });
-      });
     };
 
     var _createMarkers = (dt) => {
@@ -120,12 +93,50 @@
       return result.length > 0 ? result[0].id : undefined;
     };
 
-    var _selectDate = (timelinePoint) => {
+    var _selectDate = (idx) => {
+      var timelinePoint = this.dataPoints.timeline[idx];
       var dt = new Date(timelinePoint);
       var tmIdx = _findTimelineID(timelinePoint);
       _createMarkers(dt);
       this.timeline.setSelection(tmIdx);
+      this.currentItem = idx;
     };
+
+    $scope.$on('next', (evt, args) => {
+      var idx = this.currentItem + 1;
+      if (idx >= this.dataPoints.timeline.length) {
+        idx = 0;
+      }
+      _selectDate(idx);
+    });
+
+    $scope.$on('previous', (evt, args) => {
+      var idx = this.currentItem - 1;
+      if (idx < 0) {
+        idx = 0;
+      }
+      _selectDate(idx);
+    });
+
+    $scope.$on('tagcloud', (evt, args) => {
+      var selectedDate = this.dataPoints.timeline[this.currentItem];
+      var dt = new Date(selectedDate);
+      var calWeek = `${dt.getFullYear()}_${_getWeek(dt)}`;
+      $mdDialog.show({
+        clickOutsideToClose: true,
+        parent: angular.element(document.body),
+        templateUrl: __dirname + '/../views/occupy.view.tagcloud.html',
+        controller: ($scope, $mdDialog) => {
+          var dtArr = calWeek.split('_');
+          $scope.calWeek = dtArr[1];
+          $scope.calYear = dtArr[0];
+          $scope.tagcloudURL = `assets/wordclouds/${calWeek}.png`;
+          $scope.close = function() {
+            $mdDialog.cancel();
+          };
+        }
+      });
+    });
 
     this.initialize = function() {
 
@@ -137,7 +148,7 @@
           results.timeline = results.timeline.sort();
           this.dataPoints = results;
           _createTimeline();
-          _selectDate(this.dataPoints.timeline[0]);
+          _selectDate(0);
         });
         $scope.setReady(false);
       }).catch((err) => {

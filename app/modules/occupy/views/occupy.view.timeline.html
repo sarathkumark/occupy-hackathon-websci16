@@ -1,1 +1,17 @@
-<div id="timeline"></div>
+<div class="optionFooter" layout="column" flex layout-fill>
+  <div layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+    <md-button class="md-icon-button" aria-label="Prev" ng-click="shell.sendEvent('previous')">
+      <md-icon>keyboard_arrow_left</md-icon>
+      <md-tooltip>Prev. period</md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button" aria-label="Prev" ng-click="shell.sendEvent('tagcloud')">
+      <md-icon>layers</md-icon>
+      <md-tooltip>Show TagCloud</md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button" aria-label="Next" ng-click="shell.sendEvent('next')">
+      <md-icon>keyboard_arrow_right</md-icon>
+      <md-tooltip>Next period</md-tooltip>
+    </md-button>
+  </div>
+  <div id="timeline"></div>
+</div>
